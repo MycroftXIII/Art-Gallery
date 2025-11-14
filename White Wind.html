@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White Wind | Galerie d'Art</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Les données préchargées seront injectées ici lors du téléchargement -->
+    
+    <style>
+        :root {
+            --primary-bg: #F4F1EA; /* Dutch Cream */
+            --secondary-bg: #1A1A1A; /* Charcoal */
+            --accent-blue: #2B4C7E; /* Delft Blue inspired */
+            --text-main: #1A1A1A;
+            --text-light: #F4F1EA;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            cursor: none; /* Implémentation du curseur personnalisé */
+        }
+
+        h1, h2, h3, h4, .display-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Curseur personnalisé */
+        #cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-main); /* Épaisseur augmentée */
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            mix-blend-mode: difference;
+        }
+
+        #cursor.hovered {
+            transform: scale(2.5);
+            background-color: #fff;
+            border-color: transparent;
+        }
+
+        /* Défilement fluide */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Barre de défilement perso */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--primary-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d1d1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        /* Animation d'apparition texte */
+        .reveal-text {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Wrapper image Parallax */
+        .parallax-wrapper {
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .parallax-img {
+            will-change: transform;
+        }
+
+        /* Animation Marquee */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 40s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .marquee-container:hover .marquee-content {
+            animation-play-state: paused;
+        }
+
+        /* Navigation */
+        nav {
+            transition: background-color 0.4s ease, color 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease;
+        }
+        nav.scrolled {
+            background-color: rgba(244, 241, 234, 0.85); /* --primary-bg avec transparence */
+            backdrop-filter: blur(10px);
+            color: var(--text-main);
+            mix-blend-mode: normal;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+        }
+        nav.scrolled .nav-link::after {
+            background: var(--text-main);
+        }
+        nav.scrolled .nav-title-color {
+             color: var(--text-main);
+        }
+        nav.scrolled .nav-icon-color {
+            color: var(--text-main);
+        }
+
+        .nav-link::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 1px;
+            background: currentColor;
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Hover Bouton Ticket */
+        .btn-ticket {
+            position: relative;
+            overflow: hidden;
+            transition: color 0.3s;
+        }
+        .btn-ticket::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--secondary-bg);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+        .btn-ticket:hover::before {
+            left: 0;
+        }
+        .btn-ticket:hover {
+            color: var(--text-light);
+        }
+
+        /* Animation hover Galerie */
+        .group .exhibition-info {
+            transform: translateY(20px);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .group:hover .exhibition-info {
+            transform: translateY(0);
+        }
+        .group .exhibition-tag {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+        }
+        .group:hover .exhibition-tag {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Animation Ligne "À Propos" */
+        .about-line {
+            border-top: 1px solid var(--text-main);
+            width: 0;
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+        }
+        .reveal-text.visible .about-line {
+            width: 100%;
+        }
+
+        /* Animation Lignes Hero */
+        .hero-line-reveal {
+            display: inline-block;
+            overflow: hidden;
+        }
+        .hero-line-reveal > span {
+            display: inline-block;
+            transform: translateY(110%);
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-text.visible .hero-line-reveal > span {
+            transform: translateY(0);
+        }
+
+        /* Styles de la Modale */
+        #modal {
+            transition: opacity 0.3s ease;
+        }
+        #modal-content {
+            transition: transform 0.3s ease;
+        }
+        #modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #modal.active #modal-content {
+            transform: scale(1);
+        }
+        #close-modal {
+            font-size: 2.5rem;
+            line-height: 1;
+            color: var(--text-main);
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        #close-modal:hover {
+            opacity: 1;
+        }
+        #modal-img-link {
+            display: block;
+        }
+        #modal-img {
+            transition: opacity 0.3s;
+            cursor: zoom-in;
+        }
+        #modal-img-link:hover #modal-img {
+            opacity: 0.8;
+        }
+        /* Section d'édition dans la modale */
+        #modal-edit-section {
+            display: none; /* Caché par défaut */
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #d1d5db; /* gray-300 */
+        }
+        #modal-collection-select {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+        }
+
+        /* STYLES : Uploader d'image */
+        .file-input-label {
+            display: inline-block;
+            padding: 0.75rem 1.5rem; /* 12px 24px */
+            background-color: var(--secondary-bg); /* #1A1A1A */
+            color: var(--text-light); /* #F4F1EA */
+            font-size: 0.875rem; /* 14px */
+            text-transform: uppercase;
+            letter-spacing: 0.05em; /* tracking-widest */
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .file-input-label:hover {
+            background-color: #333;
+        }
+        #image-uploader {
+            display: none; /* Caché */
+        }
+        
+        /* Styles pour le formulaire manuel */
+        #user-form-wrapper {
+            display: none; /* Caché par défaut */
+            background-color: white;
+            padding: 1.5rem; /* 24px */
+            border: 1px solid #e5e7eb; /* gray-200 */
+            border-radius: 0.5rem; /* 8px */
+            margin-top: 1.5rem; /* 24px */
+            max-width: 42rem; /* max-w-lg */
+        }
+        .manual-input {
+            width: 100%;
+            border: 1px solid #d1d5db; /* gray-300 */
+            padding: 0.5rem 0.75rem; /* 8px 12px */
+            border-radius: 0.375rem; /* 6px */
+            margin-bottom: 1rem; /* 16px */
+        }
+        .manual-input:focus {
+            outline: 2px solid var(--accent-blue);
+            border-color: transparent;
+        }
+        .manual-textarea {
+            min-height: 80px;
+        }
+        .form-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        .form-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .form-button.save {
+            background-color: var(--secondary-bg);
+            color: var(--text-light);
+        }
+        .form-button.save:hover {
+            background-color: #333;
+        }
+        .form-button.cancel {
+            background-color: transparent;
+            color: #374151; /* gray-700 */
+            border-color: #d1d5db; /* gray-300 */
+        }
+        .form-button.cancel:hover {
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        
+        /* Champ "Nouvelle Collection" */
+        #new-collection-wrapper {
+            display: none; /* Caché par défaut */
+        }
+        
+        /* Style pour le bouton Supprimer */
+        .delete-btn {
+            position: absolute;
+            top: 1rem; /* 16px */
+            right: 1rem; /* 16px */
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 9999px; /* rounded-full */
+            width: 30px;
+            height: 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            line-height: 1;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease, background-color 0.2s ease;
+        }
+        .group:hover .delete-btn {
+            opacity: 1;
+        }
+        .delete-btn:hover {
+            background-color: rgba(220, 38, 38, 0.9); /* red-600 */
+        }
+
+        /* NOUVEAU: Styles pour les boutons d'édition */
+        #edit-desc-btn {
+            display: none; /* Caché par défaut */
+            font-size: 1.25rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        #edit-desc-btn:hover {
+            opacity: 1;
+        }
+        #edit-desc-btn.visible {
+            display: block; /* Rendu visible par JS */
+        }
+        .edit-tag-btn {
+            display: inline-block;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .edit-tag-btn:hover {
+            opacity: 1;
+        }
+        .edit-collection-desc-btn {
+            display: inline-block;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+        .edit-collection-desc-btn:hover {
+            opacity: 1;
+        }
+        
+    </style>
+</head>
+<body class="antialiased">
+
+    
+    <div id="cursor" class="hidden md:block"></div>
+
+    
+    <nav class="fixed w-full z-50 px-6 py-4 md:px-12 md:py-6 flex justify-between items-center mix-blend-difference text-[#F4F1EA] border-b border-transparent">
+        <div class="text-2xl font-bold tracking-tighter hover-trigger display-font nav-title-color">White Wind</div>
+        
+        <div class="hidden md:flex space-x-12 items-center">
+            <a href="#collection" class="nav-link text-sm uppercase tracking-widest hover-trigger">Collection</a>
+            <a href="#visiter" class="nav-link text-sm uppercase tracking-widest hover-trigger">Visiter</a>
+            <a href="#rejoindre" class="nav-link text-sm uppercase tracking-widest hover-trigger">Rejoindre</a>
+        </div>
+
+        <button class="md:hidden text-[#F4F1EA] hover-trigger nav-icon-color" id="mobile-menu-btn">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+    </nav>
+
+    
+    <div id="mobile-menu" class="fixed inset-0 bg-[#1A1A1A] z-40 transform translate-x-full transition-transform duration-500 flex flex-col justify-center items-center space-y-8 text-[#F4F1EA]">
+        <button id="close-menu" class="absolute top-6 right-6 hover-trigger">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+        <a href="#collection" class="text-3xl display-font hover-trigger mobile-link">Collection</a>
+        <a href="#visiter" class="text-3xl display-font hover-trigger mobile-link">Visiter</a>
+        <a href="#rejoindre" class="text-3xl display-font hover-trigger mobile-link">Rejoindre</a>
+    </div>
+
+    
+    <header class="relative h-screen w-full overflow-hidden flex items-center justify-center">
+        <div class="absolute inset-0 z-0">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Destruction_of_Pompeii_and_Herculaneum.jpg" 
+                 alt="La Destruction de Pompéi et Herculanum" 
+                 class="w-full h-full object-cover opacity-90 parallax-img"
+                 data-speed="0.2"
+                 fetchpriority="high">
+            <div class="absolute inset-0 bg-black/30"></div>
+        </div>
+        
+        <div class="relative z-10 text-center text-[#F4F1EA] px-4">
+            <p class="text-sm md:text-base uppercase tracking-[0.3em] mb-4 reveal-text">Galerie d'Art en Ligne</p>
+            <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter mb-8 display-font leading-none">
+                <span class="reveal-text delay-100 hero-line-reveal"><span>PAYSAGES</span></span><br>
+                <span class="reveal-text delay-200 hero-line-reveal"><span>IMMORTELS</span></span>
+            </h1>
+            <div class="reveal-text delay-300">
+                <a href="#visiter" class="btn-ticket inline-block border border-[#F4F1EA] px-8 py-3 text-sm uppercase tracking-widest hover-trigger bg-transparent text-[#F4F1EA]">
+                    Commencer la Visite
+                </a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-8 left-0 right-0 flex justify-between px-12 text-[#F4F1EA] text-xs uppercase tracking-widest mix-blend-difference">
+            <span class="hidden md:block">Est. 2025</span>
+            <span class="animate-bounce">Défiler pour Explorer</span>
+            <span class="hidden md:block">Ouvert 24h/24</span>
+        </div>
+    </header>
+
+    
+    <section class="py-24 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-12 gap-12 items-start">
+            <div class="md:col-span-4 reveal-text">
+                <h2 class="text-sm uppercase tracking-widest pt-4 about-line">À Propos</h2>
+            </div>
+            <div class="md:col-span-8 reveal-text delay-100">
+                <p class="text-3xl md:text-5xl font-light leading-tight display-font">
+                    Mycroft Wind est un espace de <span class="italic font-serif">dialogue</span> entre l'homme et la nature. Nous explorons les paysages immenses qui défient la perception et célèbrent la puissance brute du monde.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    
+    <section id="collection" class="py-12 border-t border-gray-200 bg-white">
+        <div class="px-6 md:px-12 mb-12 flex justify-between items-end">
+            <h2 class="text-4xl md:text-6xl font-bold tracking-tighter display-font reveal-text">La<br>Collection</h2>
+            <a href="#" class="hidden md:block text-sm uppercase tracking-widest border-b border-black pb-1 hover:opacity-50 transition-opacity hover-trigger">Voir les Archives</a>
+        </div>
+
+        
+        <div class="px-6 md:px-12 mb-12">
+            <h3 class="text-3xl display-font font-semibold border-b border-gray-200 pb-4 reveal-text prebuilt-collection-title" data-collection-name="le sublime romantique">Le Sublime Romantique</h3>
+            <p class="text-gray-600 mt-2 max-w-2xl reveal-text delay-100">La nature comme force écrasante, inspirant à la fois crainte et admiration.</p>
+        </div>
+        
+        <div id="collection-grid-le-sublime-romantique" class="grid md:grid-cols-3 gap-px bg-gray-200 border-b border-gray-200 mb-16">
+            
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="La Destruction de Pompéi et Herculanum"
+                 data-author="Karl Brioullov (1830-1833)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/d/d1/Destruction_of_Pompeii_and_Herculaneum.jpg"
+                 data-description="Une peinture massive dépeignant la panique et la terreur des habitants fuyant l'éruption du Vésuve. C'est un chef-d'œuvre du romantisme russe, capturant le chaos et le sublime de la catastrophe."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Destruction_of_Pompeii_and_Herculaneum.jpg/600px-Destruction_of_Pompeii_and_Herculaneum.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="La Destruction de Pompéi"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Tête d'Affiche</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Le Dernier Jour de Pompéi</h3>
+                    <p class="text-white/80 text-sm mt-1">Karl Brioullov</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Le Voyageur contemplant une mer de nuages"
+                 data-author="Caspar David Friedrich (c. 1818)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/b/b9/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg"
+                 data-description="Icône du romantisme allemand, ce tableau représente un homme face à un paysage montagneux sublime. Il symbolise la contemplation, l'infini et la confrontation de l'individu avec la grandeur de la nature."
+                 data-is-user-art="false">
+
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg/600px-Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Le Voyageur contemplant une mer de nuages"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Romantisme</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Le Voyageur</h3>
+                    <p class="text-white/80 text-sm mt-1">Caspar David Friedrich</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Tempête de neige : Hannibal et son armée traversant les Alpes"
+                 data-author="J. M. W. Turner (1812)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/f/f4/Joseph_Mallord_William_Turner_081.jpg"
+                 data-description="Turner capture le sublime terrifiant de la nature. Un tourbillon de tempête de neige et de soleil obscurci domine la scène, éclipsant presque l'armée d'Hannibal, pour souligner l'insignifiance de l'homme face aux éléments."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Joseph_Mallord_William_Turner_081.jpg/600px-Joseph_Mallord_William_Turner_081.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Tempête de neige : Hannibal et son armée"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Sublime</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Tempête de Neige: Hannibal</h3>
+                    <p class="text-white/80 text-sm mt-1">J. M. W. Turner</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Vue de la croupe de bœuf (The Oxbow)"
+                 data-author="Thomas Cole (1836)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/b/b1/Cole_Thomas_The_Oxbow_%28The_Connecticut_River_near_Northampton_1836%29.jpg"
+                 data-description="Un chef-d'œuvre de la Hudson River School, ce tableau oppose une nature sauvage et orageuse (à gauche) à une plaine civilisée et paisible (à droite). C'est une allégorie du destin manifeste et de la relation entre l'homme et la nature américaine."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Cole_Thomas_The_Oxbow_%28The_Connecticut_River_near_Northampton_1836%29.jpg/600px-Cole_Thomas_The_Oxbow_%28The_Connecticut_River_near_Northampton_1836%29.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="The Oxbow"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Hudson River</span>
+                    <h3 class="text-2xl text-white font-bold display-font">The Oxbow</h3>
+                    <p class="text-white/80 text-sm mt-1">Thomas Cole</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Parmi les montagnes de la Sierra Nevada"
+                 data-author="Albert Bierstadt (1868)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/5/5f/Bierstadt_-_Among_the_Sierra_Nevada_Mountains_-_1868.jpg"
+                 data-description="Bierstadt était célèbre pour ses paysages grandioses de l'Ouest américain. Ce tableau montre une lumière quasi-divine perçant les nuages pour illuminer un lac et une vallée paisible, entourés de sommets spectaculaires."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bierstadt_-_Among_the_Sierra_Nevada_Mountains_-_1868.jpg/600px-Bierstadt_-_Among_the_Sierra_Nevada_Mountains_-_1868.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Among the Sierra Nevada Mountains"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Ouest Américain</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Sierra Nevada</h3>
+                    <p class="text-white/80 text-sm mt-1">Albert Bierstadt</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Le Grand Jour de Sa Colère"
+                 data-author="John Martin (1851-1853)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/5/50/John_Martin_-_The_Great_Day_of_His_Wrath_-_Google_Art_Project.jpg"
+                 data-description="Une vision apocalyptique de la fin du monde, inspirée par le Livre de l'Apocalypse. Des montagnes s'effondrent, des éclairs déchirent le ciel et une ville est engloutie dans un abîme de feu. Le paysage ultime du sublime et de la terreur."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/John_Martin_-_The_Great_Day_of_His_Wrath_-_Google_Art_Project.jpg/600px-John_Martin_-_The_Great_Day_of_His_Wrath_-_Google_Art_Project.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Le Grand Jour de Sa Colère"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Apocalypse</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Le Jour de Sa Colère</h3>
+                    <p class="text-white/80 text-sm mt-1">John Martin</p>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="px-6 md:px-12 mb-12">
+            <h3 class="text-3xl display-font font-semibold border-b border-gray-200 pb-4 reveal-text prebuilt-collection-title" data-collection-name="mers & tempêtes">Mers & Tempêtes</h3>
+            <p class="text-gray-600 mt-2 max-w-2xl reveal-text delay-100">La puissance incontrôlable de l'océan, des vagues calmes aux tempêtes dévastatrices.</p>
+        </div>
+        
+        <div id="collection-grid-mers-tempêtes" class="grid md:grid-cols-3 gap-px bg-gray-200 border-b border-gray-200 mb-16">
+            
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="La Grande Vague de Kanagawa"
+                 data-author="Katsushika Hokusai (c. 1829-1833)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/a/a5/Tsunami_by_hokusai_19th_century.jpg"
+                 data-description="Célèbre estampe japonaise ukiyo-e montrant une vague immense menaçant des bateaux, avec le mont Fuji en arrière-plan. Une représentation saisissante de la force de la nature et de la fragilité humaine."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/600px-Tsunami_by_hokusai_19th_century.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="La Grande Vague de Kanagawa"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Ukiyo-e</span>
+                    <h3 class="text-2xl text-white font-bold display-font">La Grande Vague</h3>
+                    <p class="text-white/80 text-sm mt-1">Katsushika Hokusai</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Le Radeau de la Méduse"
+                 data-author="Théodore Géricault (1818–1819)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/1/15/JEAN_LOUIS_TH%C3%89ODORE_G%C3%89RICAULT_-_La_Balsa_de_la_Medusa_%28Museo_del_Louvre%2C_1818-19%29.jpg"
+                 data-description="Une icône du romantisme français. Ce tableau monumental dépeint les survivants d'un naufrage sur un radeau de fortune, oscillant entre l'espoir et le désespoir. C'est autant un paysage marin qu'un commentaire politique."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/JEAN_LOUIS_TH%C3%89ODORE_G%C3%89RICAULT_-_La_Balsa_de_la_Medusa_%28Museo_del_Louvre%2C_1818-19%29.jpg/600px-JEAN_LOUIS_TH%C3%89ODORE_G%C3%89RICAULT_-_La_Balsa_de_la_Medusa_%28Museo_del_Louvre%2C_1818-19%29.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Le Radeau de la Méduse"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Drame Marin</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Radeau de la Méduse</h3>
+                    <p class="text-white/80 text-sm mt-1">Théodore Géricault</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="La Neuvième Vague"
+                 data-author="Ivan Aivazovsky (1850)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/4/4a/Hovhannes_Aivazovsky_-_The_Ninth_Wave_-_Google_Art_Project.jpg"
+                 data-description="Considéré comme le chef-d'œuvre d'Aivazovsky. Il montre des survivants d'un naufrage s'accrochant à une épave, illuminés par un soleil levant irréel après une nuit de tempête. La 'neuvième vague' est une vieille légende nautique sur la vague la plus destructrice."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Hovhannes_Aivazovsky_-_The_Ninth_Wave_-_Google_Art_Project.jpg/600px-Hovhannes_Aivazovsky_-_The_Ninth_Wave_-_Google_Art_Project.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="La Neuvième Vague"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Romantisme Russe</span>
+                    <h3 class="text-2xl text-white font-bold display-font">La Neuvième Vague</h3>
+                    <p class="text-white/80 text-sm mt-1">Ivan Aivazovsky</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Le Négrier (Slave Ship)"
+                 data-author="J. M. W. Turner (1840)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/2/26/Slave-ship.jpg"
+                 data-description="Un paysage marin puissant et politique. Turner dépeint un coucher de soleil ardent sur une mer tumultueuse où des esclaves sont jetés par-dessus bord d'un navire pour toucher l'assurance. La beauté de la nature contraste violemment avec la cruauté humaine."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Slave-ship.jpg/600px-Slave-ship.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Le Négrier"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Abolitionnisme</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Le Négrier</h3>
+                    <p class="text-white/80 text-sm mt-1">J. M. W. Turner</p>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="px-6 md:px-12 mb-12">
+            <h3 class="text-3xl display-font font-semibold border-b border-gray-200 pb-4 reveal-text prebuilt-collection-title" data-collection-name="impressions de lumière">Impressions de Lumière</h3>
+            <p class="text-gray-600 mt-2 max-w-2xl reveal-text delay-100">La capture de l'instant. L'accent est mis sur la lumière changeante et son effet sur le paysage.</p>
+        </div>
+        
+        <div id="collection-grid-impressions-de-lumière" class="grid md:grid-cols-3 gap-px bg-gray-200 border-b border-gray-200 mb-16">
+            
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Impression, soleil levant"
+                 data-author="Claude Monet (1872)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg"
+                 data-description="Le tableau qui a donné son nom au mouvement impressionniste. Monet capture la brume matinale sur le port du Havre, où les formes se dissolvent et la lumière du soleil orange vif se reflète sur l'eau."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/600px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Impression, soleil levant"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Impressionnisme</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Impression, soleil levant</h3>
+                    <p class="text-white/80 text-sm mt-1">Claude Monet</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Les Nymphéas (série)"
+                 data-author="Claude Monet (c. 1915-1926)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/0/05/Claude_Monet_038.jpg"
+                 data-description="Partie de la série monumentale des Nymphéas à Giverny. Monet abandonne l'horizon pour se concentrer uniquement sur la surface de l'étang, capturant les reflets du ciel et des nuages mêlés aux fleurs, créant un paysage presque abstrait."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Claude_Monet_038.jpg/600px-Claude_Monet_038.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Les Nymphéas"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Giverny</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Les Nymphéas</h3>
+                    <p class="text-white/80 text-sm mt-1">Claude Monet</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Boulevard Montmartre, effet de nuit"
+                 data-author="Camille Pissarro (1897)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/5/5d/Camille_Pissarro_009.jpg"
+                 data-description="Pissarro a peint une série de ce boulevard à différents moments de la journée. Cette version de nuit est un tour de force, capturant les lumières artificielles des lampadaires, des magasins et des voitures dans un paysage urbain moderne."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Camille_Pissarro_009.jpg/600px-Camille_Pissarro_009.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Boulevard Montmartre, effet de nuit"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Paysage Urbain</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Boulevard Montmartre</h3>
+                    <p class="text-white/80 text-sm mt-1">Camille Pissarro</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="L'Inondation à Port-Marly"
+                 data-author="Alfred Sisley (1876)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/0/06/La_inundaci%C3%B3n_en_Port_Marly%2C_por_Alfred_Sisley.jpg"
+                 data-description="Sisley était un maître des paysages impressionnistes, se concentrant sur les effets de l'eau et du ciel. Ici, il capture la lumière argentée d'une inondation, où les maisons semblent flotter et tout est réduit à des reflets."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/La_inundaci%C3%B3n_en_Port_Marly%2C_por_Alfred_Sisley.jpg/600px-La_inundaci%C3%B3n_en_Port_Marly%2C_por_Alfred_Sisley.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="L'Inondation à Port-Marly"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Reflets</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Inondation à Port-Marly</h3>
+                    <p class="text-white/80 text-sm mt-1">Alfred Sisley</p>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="px-6 md:px-12 mb-12">
+            <h3 class="text-3xl display-font font-semibold border-b border-gray-200 pb-4 reveal-text prebuilt-collection-title" data-collection-name="horizons lointains">Horizons Lointains</h3>
+            <p class="text-gray-600 mt-2 max-w-2xl reveal-text delay-100">L'exploration de terres inconnues, des tropiques aux étendues glacées de l'Arctique.</p>
+        </div>
+        
+        <div id="collection-grid-horizons-lointains" class="grid md:grid-cols-3 gap-px bg-gray-200 border-b border-gray-200">
+            
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Le Cœur des Andes"
+                 data-author="Frederic Edwin Church (1859)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/7/78/Church_Heart_of_the_Andes.jpg"
+                 data-description="Une composition magistrale et luxuriante basée sur les voyages de Church en Amérique du Sud. Ce paysage n'est pas un lieu réel, mais une synthèse idéalisée de la flore, de la faune et de la topographie tropicales, à une échelle épique."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Church_Heart_of_the_Andes.jpg/600px-Church_Heart_of_the_Andes.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Le Cœur des Andes"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Exploration</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Le Cœur des Andes</h3>
+                    <p class="text-white/80 text-sm mt-1">Frederic Edwin Church</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Les Icebergs"
+                 data-author="Frederic Edwin Church (1861)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/b/b9/The_Icebergs_%28Frederic_Edwin_Church%29%2C_1861_%28color%29.jpg"
+                 data-description="Peint après une expédition à Terre-Neuve. Le tableau dépeint un paysage arctique à la fois magnifique et désolé, avec une lumière froide et éthérée. Le mât brisé au premier plan suggère le peril de l'exploration."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/The_Icebergs_%28Frederic_Edwin_Church%29%2C_1861_%28color%29.jpg/600px-The_Icebergs_%28Frederic_Edwin_Church%29%2C_1861_%28color%29.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Les Icebergs"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Arctique</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Les Icebergs</h3>
+                    <p class="text-white/80 text-sm mt-1">Frederic Edwin Church</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="Paysage Tahitien (Matamoe)"
+                 data-author="Paul Gauguin (1892)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/7/77/Paul_Gauguin_083.jpg"
+                 data-description="Gauguin recherche un 'paradis primitif' à Tahiti. Ce tableau utilise des couleurs vives et non naturalistes et des formes simplifiées pour dépeindre un paysage luxuriant, reflétant davantage son état intérieur que la réalité topographique."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Paul_Gauguin_083.jpg/600px-Paul_Gauguin_083.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="Paysage Tahitien"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Post-Impressionnisme</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Paysage Tahitien</h3>
+                    <p class="text-white/80 text-sm mt-1">Paul Gauguin</p>
+                </div>
+            </div>
+
+            
+            <div class="group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer"
+                 data-title="L'Apothéose de la Guerre"
+                 data-author="Vasily Vereshchagin (1871)"
+                 data-img="https://upload.wikimedia.org/wikipedia/commons/1/18/Apotheosis.jpg"
+                 data-description="Un paysage sinistre et puissant. Vereshchagin dédie ce tableau 'à tous les grands conquérants, passés, présents et à venir'. Au lieu d'un paysage naturel, c'est un monument macabre de crânes dans un désert aride, une critique cinglante de la guerre."
+                 data-is-user-art="false">
+                
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Apotheosis.jpg/600px-Apotheosis.jpg" 
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                     alt="L'Apothéose de la Guerre"
+                     loading="lazy" decoding="async">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                    <span class="text-white text-xs uppercase tracking-widest bg-black px-2 py-1 mb-2 inline-block exhibition-tag">Anti-Guerre</span>
+                    <h3 class="text-2xl text-white font-bold display-font">Apothéose de la Guerre</h3>
+                    <p class="text-white/80 text-sm mt-1">Vasily Vereshchagin</p>
+                </div>
+            </div>
+
+        </div>
+
+        
+        
+        <div id="custom-collections-container" class="mt-16">
+            
+        </div>
+
+        
+        
+        <div id="user-controls-container" class="px-6 md:px-12 mt-16 mb-12">
+            <h3 class="text-3xl display-font font-semibold border-b border-gray-200 pb-4 reveal-text">Vos Ajouts</h3>
+            
+            <p class="text-gray-600 mt-2 max-w-2xl reveal-text delay-100">Ajoutez et organisez vos propres œuvres. Elles seront sauvegardées dans votre navigateur.</p>
+            
+            <div class="mt-8 reveal-text delay-200 flex items-center space-x-4">
+                <label for="image-uploader" class="file-input-label hover-trigger">
+                    Ajouter une œuvre
+                </label>
+                <input type="file" id="image-uploader" accept="image/png, image/jpeg, image/webp">
+
+                
+                <button id="download-site-btn" class="file-input-label hover-trigger">
+                    Télécharger le site
+                </button>
+            </div>
+
+            
+            <div id="user-form-wrapper" class="mt-8">
+                <img id="user-form-preview" src="https://placehold.co/100x100/f4f1ea/1a1a1a?text=Aper%C3%A7u" alt="Aperçu de l'image" class="form-preview">
+                <form id="user-art-form" class="space-y-4">
+                    <div>
+                        <label for="user-titre" class="block text-sm font-medium text-gray-700 mb-1">Titre</label>
+                        <input type="text" id="user-titre" class="manual-input" placeholder="Ex: La Nuit Étoilée">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="user-auteur" class="block text-sm font-medium text-gray-700 mb-1">Auteur</label>
+                            <input type="text" id="user-auteur" class="manual-input" placeholder="Ex: Vincent van Gogh">
+                        </div>
+                        <div>
+                            <label for="user-annee" class="block text-sm font-medium text-gray-700 mb-1">Année</label>
+                            <input type="text" id="user-annee" class="manual-input" placeholder="Ex: 1889">
+                        </div>
+                    </div>
+                    
+                    
+                    <div>
+                        <label for="user-collection" class="block text-sm font-medium text-gray-700 mb-1">Collection</label>
+                        <select id="user-collection" class="manual-input">
+                            <option value="">Aucune collection</option>
+                            <option value="__NEW__">-- Créer une nouvelle collection --</option>
+                        </select>
+                    </div>
+                    
+                    
+                    <div id="new-collection-wrapper">
+                        <label for="user-new-collection" class="block text-sm font-medium text-gray-700 mb-1">Nom de la nouvelle collection</label>
+                        <input type="text" id="user-new-collection" class="manual-input" placeholder="Ex: Mes Favoris">
+                    </div>
+
+                    <div>
+                        <label for="user-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="user-description" class="manual-input manual-textarea" placeholder="Courte description de l'œuvre..."></textarea>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button id="save-user-art" class="form-button save hover-trigger">Sauvegarder l'œuvre</button>
+                        <button id="cancel-user-art" class="form-button cancel hover-trigger">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        
+        
+        <div id="non-classés-container">
+            
+        </div>
+
+    </section>
+
+    
+    <div class="py-8 bg-[#1A1A1A] text-[#F4F1EA] border-y border-white/10">
+        <div class="marquee-container hover-trigger">
+            <div class="marquee-content text-6xl md:text-8xl font-bold uppercase tracking-tighter display-font">
+                Turner • Friedrich • Monet • Hokusai • Cole • Bierstadt • Turner • Friedrich • Monet • Hokusai • Cole • Bierstadt •
+            </div>
+        </div>
+    </div>
+
+    
+    <section id="visiter" class="bg-[#F4F1EA] text-[#1A1A1A]">
+        <div class="grid md:grid-cols-2">
+            <div class="p-12 md:p-24 border-b md:border-b-0 md:border-r border-black/10 flex flex-col justify-center">
+                <h2 class="text-4xl mb-8 display-font font-bold">Nous Rendre Visite</h2>
+                
+                <div class="space-y-8">
+                    <div class="reveal-text">
+                        <h4 class="text-sm uppercase tracking-widest mb-2 text-gray-500">Heures d'Ouverture</h4>
+                        <p class="text-xl">Accessible en ligne 24h/24, 7j/7</p>
+                    </div>
+
+                    <div class="reveal-text delay-100">
+                        <h4 class="text-sm uppercase tracking-widest mb-2 text-gray-500">Adresse</h4>
+                        <p class="text-xl">Une galerie mondiale, accessible</p>
+                        <p class="text-xl">depuis chez vous.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="relative h-[50vh] md:h-auto overflow-hidden parallax-wrapper">
+                <img src="https://images.unsplash.com/photo-1566054757965-8c4085344c96?q=80&w=2049&auto-format&fit=crop" 
+                     class="absolute inset-0 w-full h-[120%] object-cover parallax-img" 
+                     alt="Architecture du musée"
+                     data-speed="0.5"
+                     loading="lazy" decoding="async">
+            </div>
+        </div>
+    </section>
+
+    
+    <footer id="rejoindre" class="bg-[#1A1A1A] text-[#F4F1EA] pt-24 pb-12 px-6 md:px-12">
+        <div class="grid md:grid-cols-2 gap-12 mb-24">
+            <div>
+                <h2 class="text-5xl md:text-7xl font-bold display-font tracking-tighter mb-8">Restez<br>Informé</h2>
+            </div>
+            <div class="flex flex-col justify-end">
+                <p class="mb-6 text-gray-400 max-w-md">Cette galerie est un projet en constante évolution. Revenez bientôt pour découvrir de nouvelles fonctionnalités.</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-end border-t border-white/10 pt-12 text-xs uppercase tracking-widest text-gray-500">
+            <div class="mb-6 md:mb-0 space-x-6">
+                <span>Plus d'infos à venir</span>
+            </div>
+            <div class="flex flex-col md:flex-row md:space-x-8">
+                <span class="mb-2 md:mb-0">© 2025 Mycroft Wind</span>
+                <a href="#" class="hover:text-white transition-colors hover-trigger">Politique de Confidentialité</a>
+            </div>
+        </div>
+    </footer>
+
+    
+    <div id="modal" class="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 opacity-0 pointer-events-none cursor-pointer">
+        <div id="modal-content" class="bg-[var(--primary-bg)] text-[var(--text-main)] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 relative transform scale-95 cursor-auto">
+            <button id="close-modal" class="absolute top-4 right-4 hover-trigger z-10">
+                <i data-lucide="x" class="w-8 h-8"></i>
+            </button>
+            <div class="w-full">
+                <a id="modal-img-link" href="#" target="_blank" rel="noopener noreferrer" title="Ouvrir l'image en grand">
+                    <img id="modal-img" src="https://placehold.co/600x400/f4f1ea/1a1a1a?text=Chargement..." alt="Tableau en détail" class="w-full h-auto max-h-[60vh] object-contain mb-6 rounded-md">
+                </a>
+            </div>
+            <h3 id="modal-title" class="text-3xl md:text-4xl display-font font-bold mb-2"></h3>
+            <p id="modal-author" class="text-lg italic text-gray-600 mb-4"></p>
+            
+            
+            <div class="relative">
+                <p id="modal-description" class="text-base leading-relaxed"></p>
+                <button id="edit-desc-btn" class="absolute top-0 right-0 text-gray-500 hover:text-black cursor-pointer" title="Modifier la description"✏️</button>
+            </div>
+
+            
+            <div id="modal-edit-section">
+                <label for="modal-collection-select" class="block text-sm font-medium text-gray-700 mb-1">Changer la collection :</label>
+                <select id="modal-collection-select" class="manual-input"></select>
+                <p class="text-xs text-gray-500 mt-1">La modification est sauvegardée automatiquement.</p>
+            </div>
+        </div>
+    </div>
+
+
+    
+    <script>
+        // Initialisation Lucide Icons
+        lucide.createIcons();
+
+        // Logique Curseur Personnalisé
+        const cursor = document.getElementById('cursor');
+        const hoverTriggers = document.querySelectorAll('.hover-trigger');
+
+        document.addEventListener('mousemove', (e) => {
+            if (window.innerWidth > 768) {
+                cursor.style.left = e.clientX - 10 + 'px';
+                cursor.style.top = e.clientY - 10 + 'px';
+            }
+        });
+
+        hoverTriggers.forEach(trigger => {
+            trigger.addEventListener('mouseenter', () => {
+                cursor.classList.add('hovered');
+            });
+            trigger.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hovered');
+            });
+        });
+
+        // Animation Nav au Scroll
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Apparition Texte au Scroll
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-text').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Effet Parallax simple
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelectorAll('.parallax-img').forEach(img => {
+                const speed = img.getAttribute('data-speed');
+                const yPos = -(scrolled * speed * 0.2);
+                img.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+
+        // Toggle Menu Mobile
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        function toggleMenu() {
+            mobileMenu.classList.toggle('translate-x-full');
+            document.body.classList.toggle('overflow-hidden');
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeMenuBtn.addEventListener('click', toggleMenu);
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+
+        
+        // --- LOGIQUE D'AJOUT MANUEL (Avec Collections) ---
+        
+        const imageUploader = document.getElementById('image-uploader');
+        const userFormWrapper = document.getElementById('user-form-wrapper');
+        const userFormPreview = document.getElementById('user-form-preview');
+        const userArtForm = document.getElementById('user-art-form');
+        
+        // Champs du formulaire
+        const userTitre = document.getElementById('user-titre');
+        const userAuteur = document.getElementById('user-auteur');
+        const userAnnee = document.getElementById('user-annee');
+        const userDescription = document.getElementById('user-description');
+        const userCollection = document.getElementById('user-collection');
+        const newCollectionWrapper = document.getElementById('new-collection-wrapper');
+        const userNewCollection = document.getElementById('user-new-collection');
+        
+        // Boutons du formulaire
+        const saveBtn = document.getElementById('save-user-art');
+        const cancelBtn = document.getElementById('cancel-user-art');
+        
+        // Conteneurs de destination
+        const customCollectionsContainer = document.getElementById('custom-collections-container');
+        const nonClassesContainer = document.getElementById('non-classés-container');
+        
+        // Variable pour stocker l'URL de l'image temporairement
+        window.tempImageUrl = null;
+        
+        // Stockage global des collections pour mise à jour facile
+        let prebuiltCollections = new Map();
+        let userCollections = new Set();
+        // NOUVEAU: Stockage pour les descriptions de collection
+        let customCollectionDescriptions = {};
+        
+        // Variable pour stocker l'ID de l'œuvre en cours d'édition dans la modale
+        let currentEditingArtworkId = null;
+
+        imageUploader.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) { // Limite 5MB
+                alert("L'image est trop volumineuse (Max 5MB).");
+                imageUploader.value = null;
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                window.tempImageUrl = e.target.result;
+                userFormPreview.src = window.tempImageUrl;
+                userFormWrapper.style.display = 'block';
+                updateCollectionDropdown(userCollection); // Mettre à jour le dropdown du formulaire
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // Gérer l'affichage du champ "Nouvelle collection"
+        userCollection.addEventListener('change', () => {
+            if (userCollection.value === '__NEW__') {
+                newCollectionWrapper.style.display = 'block';
+                userNewCollection.focus();
+            } else {
+                newCollectionWrapper.style.display = 'none';
+            }
+        });
+        
+        userArtForm.addEventListener('submit', (e) => e.preventDefault());
+
+        function resetForm() {
+            userFormWrapper.style.display = 'none';
+            userTitre.value = '';
+            userAuteur.value = '';
+            userAnnee.value = '';
+            userDescription.value = '';
+            userCollection.value = '';
+            userNewCollection.value = '';
+            newCollectionWrapper.style.display = 'none';
+            imageUploader.value = null;
+            window.tempImageUrl = null;
+        }
+
+        cancelBtn.addEventListener('click', resetForm);
+
+        // --- Logique de sauvegarde dans localStorage ---
+        saveBtn.addEventListener('click', () => {
+            if (!window.tempImageUrl) return;
+
+            // Déterminer le nom de la collection
+            let collectionName = userCollection.value;
+            if (collectionName === '__NEW__') {
+                collectionName = userNewCollection.value.trim() || ""; // "" si vide
+            }
+            // Nettoyer le nom pour éviter les problèmes (ex: tout en minuscules)
+            collectionName = collectionName.toLowerCase();
+
+            const newArtwork = {
+                id: crypto.randomUUID(),
+                imageUrl: window.tempImageUrl,
+                titre: userTitre.value || "Titre inconnu",
+                auteur: userAuteur.value || "Auteur inconnu",
+                annee: userAnnee.value || "Date inconnue",
+                description: userDescription.value || "Aucune description fournie.",
+                collection: collectionName,
+                tag: "Ajouté par vous" // Tag par défaut
+            };
+            
+            let userArtworks = JSON.parse(localStorage.getItem('mycroftUserArt')) || [];
+            userArtworks.push(newArtwork);
+
+            try {
+                localStorage.setItem('mycroftUserArt', JSON.stringify(userArtworks));
+                // NOUVEAU: Initialiser la description de la collection si elle est nouvelle
+                if (collectionName && !prebuiltCollections.has(collectionName) && !customCollectionDescriptions[collectionName]) {
+                    customCollectionDescriptions[collectionName] = "Votre collection personnalisée.";
+                    localStorage.setItem('mycroftCustomCollections', JSON.stringify(customCollectionDescriptions));
+                }
+            } catch (e) {
+                alert("Erreur: Impossible de sauvegarder. Le stockage local est peut-être plein.");
+                return;
+            }
+            
+            // Re-dessiner toutes les œuvres utilisateur pour refléter le changement
+            renderUserArtworks(userArtworks);
+            
+            resetForm();
+        });
+
+        
+        // --- NOUVELLE FONCTION : Re-dessiner TOUTES les œuvres utilisateur ---
+        function renderUserArtworks(artworks) {
+            // 1. Vider toutes les destinations d'art utilisateur
+            customCollectionsContainer.innerHTML = '';
+            nonClassesContainer.innerHTML = '';
+            prebuiltCollections.forEach(gridId => {
+                const grid = document.getElementById(gridId);
+                // Retirer uniquement les cartes ajoutées par l'utilisateur
+                grid.querySelectorAll('.user-added-card').forEach(card => card.remove());
+            });
+            
+            userCollections.clear(); // Vider le set des collections personnalisées
+            
+            // 2. Grouper les œuvres par collection
+            const groupedArtworks = artworks.reduce((acc, art) => {
+                // S'assurer que l'ID existe (pour les anciennes sauvegardes)
+                if (!art.id) art.id = crypto.randomUUID();
+                
+                const collection = art.collection || ""; // "" pour "Aucune collection"
+                if (!acc[collection]) {
+                    acc[collection] = [];
+                }
+                acc[collection].push(art);
+                
+                // Ajouter au set global si ce n'est pas la collection par défaut ou une pré-existante
+                if (collection && !prebuiltCollections.has(collection)) {
+                    userCollections.add(collection);
+                }
+                
+                return acc;
+            }, {});
+
+            // 3. Fonction pour créer une carte (réutilisée)
+            const createCard = (artwork) => {
+                const data = {
+                    titre: artwork.titre,
+                    auteur: artwork.auteur,
+                    annee: artwork.annee,
+                    description: artwork.description,
+                    tag: artwork.tag || "Ajouté par vous" // Récupérer le tag
+                };
+                
+                const card = document.createElement('div');
+                card.className = "group bg-white relative aspect-[4/5] overflow-hidden hover-trigger collection-item cursor-pointer user-added-card";
+                
+                card.dataset.id = artwork.id;
+                card.dataset.isUserArt = "true"; // Marquer comme œuvre utilisateur
+                
+                card.dataset.img = artwork.imageUrl;
+                card.dataset.title = data.titre;
+                card.dataset.author = `${data.auteur} (${data.annee})`;
+                card.dataset.description = data.description;
+                card.dataset.collection = artwork.collection || "";
+                card.dataset.tag = data.tag; // Sauvegarder le tag
+
+                card.innerHTML = `
+                    <button class="delete-btn hover-trigger" title="Supprimer l'œuvre">&times;</button>
+                    <img src="${artwork.imageUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="${data.titre}" loading="lazy" decoding="async">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-6 exhibition-info">
+                        <!-- MODIFIÉ: Ajout du bouton d'édition de tag -->
+                        <span class="text-white text-xs uppercase tracking-widest bg-gray-700 px-2 py-1 mb-2 inline-block exhibition-tag">
+                            <span class="tag-text">${data.tag}</span>
+                            <span class="edit-tag-btn cursor-pointer hover:text-yellow-300 ml-1" title="Modifier le tag">✏️</span>
+                        </span>
+                        <h3 class="text-2xl text-white font-bold display-font">${data.titre}</h3>
+                        <p class="text-white/80 text-sm mt-1">${data.auteur}</p>
+                    </div>
+                `;
+                return card;
+            };
+            
+            // 4. Parcourir les collections groupées et les afficher
+            Object.keys(groupedArtworks).forEach(collectionName => {
+                const artworksForCollection = groupedArtworks[collectionName];
+                
+                if (prebuiltCollections.has(collectionName)) {
+                    // C'est une collection principale
+                    const grid = document.getElementById(prebuiltCollections.get(collectionName));
+                    if (grid) {
+                        artworksForCollection.forEach(artwork => {
+                            grid.appendChild(createCard(artwork));
+                        });
+                    }
+                } else if (userCollections.has(collectionName)) {
+                    // C'est une collection personnalisée
+                    
+                    const displayName = collectionName.charAt(0).toUpperCase() + collectionName.slice(1);
+                    
+                    // 1. Créer le bloc titre (identique au pré-existant)
+                    const titleBlock = document.createElement('div');
+                    titleBlock.className = "px-6 md:px-12 mb-12"; 
+                    
+                    const titleH3 = document.createElement('h3');
+                    titleH3.className = "text-3xl display-font font-semibold border-b border-gray-200 pb-4 reveal-text";
+                    titleH3.textContent = displayName;
+                    
+                    // Ajout du <p> optionnel
+                    const titleP = document.createElement('p');
+                    titleP.className = "text-gray-600 mt-2 max-w-2xl reveal-text";
+                    
+                    // NOUVEAU: Logique pour la description modifiable
+                    const description = customCollectionDescriptions[collectionName] || "Votre collection personnalisée.";
+                    titleP.innerHTML = `
+                        <span class="collection-desc-text">${description}</span>
+                        <span class="edit-collection-desc-btn" data-collection-name="${collectionName}" title="Modifier la description">✏️</span>
+                    `;
+                    
+                    titleBlock.appendChild(titleH3);
+                    titleBlock.appendChild(titleP);
+
+                    // 2. Créer le bloc grille (identique au pré-existant)
+                    const grid = document.createElement('div');
+                    grid.className = 'grid md:grid-cols-3 gap-px bg-gray-200 border-b border-gray-200 mb-16';
+                    
+                    artworksForCollection.forEach(artwork => {
+                        grid.appendChild(createCard(artwork));
+                    });
+                    
+                    // 3. Ajouter les deux blocs au conteneur
+                    customCollectionsContainer.appendChild(titleBlock);
+                    customCollectionsContainer.appendChild(grid);
+                    
+                    observer.observe(titleH3);
+                    observer.observe(titleP);
+
+                } else {
+                    // C'est "non classé" (collectionName === "")
+                    if (artworksForCollection.length > 0) {
+                        let grid = document.getElementById('non-classés-grid');
+                        if (!grid) {
+                            const section = document.createElement('div');
+                            section.id = 'non-classés-section';
+                            
+                            const titleBlock = document.createElement('div');
+                            titleBlock.className = "px-6 md:px-12 mb-12"; 
+                            
+                            const titleH3 = document.createElement('h3');
+                            titleH3.className = "text-3xl display-font font-semibold border-b border-gray-200 pb-4 reveal-text";
+                            titleH3.textContent = "Mes Ajouts (non classés)";
+                            titleBlock.appendChild(titleH3);
+                            
+                            grid = document.createElement('div');
+                            grid.id = 'non-classés-grid';
+                            grid.className = 'grid md:grid-cols-3 gap-px bg-gray-200 border-b border-gray-200 mb-16';
+                            
+                            section.appendChild(titleBlock);
+                            section.appendChild(grid);
+                            nonClassesContainer.appendChild(section);
+                            
+                            observer.observe(titleH3);
+                        }
+                        
+                        artworksForCollection.forEach(artwork => {
+                            grid.appendChild(createCard(artwork));
+                        });
+                    }
+                }
+            });
+            
+            // 5. Mettre à jour les dropdowns
+            updateCollectionDropdowns();
+        }
+
+        // --- Fonction pour charger depuis localStorage ---
+        function loadUserArt() {
+            let userArtworks = [];
+            
+            // 1. Scanner les collections pré-existantes
+            prebuiltCollections.clear();
+            document.querySelectorAll('.prebuilt-collection-title').forEach(titleEl => {
+                const name = titleEl.dataset.collectionName;
+                const gridId = titleEl.parentElement.nextElementSibling.id;
+                if (name && gridId) {
+                    prebuiltCollections.set(name, gridId);
+                }
+            });
+            
+            // 2. VÉRIFIER LES DONNÉES PRÉCHARGÉES (pour le fichier téléchargé)
+            const preloadedDataScript = document.getElementById('__PRELOADED_DATA__');
+            if (preloadedDataScript) {
+                console.log("Données préchargées trouvées. C'est un fichier téléchargé.");
+                try {
+                    const preloadedData = JSON.parse(preloadedDataScript.textContent);
+                    userArtworks = preloadedData.artworks || [];
+                    customCollectionDescriptions = preloadedData.collections || {};
+                    
+                    // SAUVEGARDER ces données dans le localStorage local
+                    localStorage.setItem('mycroftUserArt', JSON.stringify(userArtworks));
+                    localStorage.setItem('mycroftCustomCollections', JSON.stringify(customCollectionDescriptions));
+                    
+                    // Retirer le script pour ne pas le réutiliser
+                    preloadedDataScript.remove();
+                } catch (e) {
+                    console.error("Erreur de lecture des données préchargées:", e);
+                    // Continuer en chargeant depuis le localStorage (qui sera vide la première fois)
+                    userArtworks = JSON.parse(localStorage.getItem('mycroftUserArt')) || [];
+                    customCollectionDescriptions = JSON.parse(localStorage.getItem('mycroftCustomCollections')) || {};
+                }
+            } else {
+                // COMPORTEMENT NORMAL : Charger depuis le localStorage
+                console.log("Site original. Chargement depuis le localStorage.");
+                userArtworks = JSON.parse(localStorage.getItem('mycroftUserArt')) || [];
+                customCollectionDescriptions = JSON.parse(localStorage.getItem('mycroftCustomCollections')) || {};
+            }
+            
+            // 3. Assurer que les ID et Tags existent (migration)
+            let needsSave = false;
+            userArtworks.forEach(art => {
+                if (!art.id) {
+                    art.id = crypto.randomUUID();
+                    needsSave = true;
+                }
+                if (typeof art.tag === 'undefined') {
+                    art.tag = "Ajouté par vous";
+                    needsSave = true;
+                }
+            });
+            
+            if (needsSave) {
+                console.log("Mise à jour des ID et tags des œuvres...");
+                localStorage.setItem('mycroftUserArt', JSON.stringify(userArtworks));
+            }
+
+            // 4. Afficher
+            renderUserArtworks(userArtworks);
+        }
+        
+        // --- Mettre à jour les dropdowns de collection ---
+        function updateCollectionDropdowns() {
+            updateCollectionDropdown(userCollection);
+            updateCollectionDropdown(document.getElementById('modal-collection-select'));
+        }
+        
+        function updateCollectionDropdown(selectElement) {
+            const currentValue = selectElement.value;
+            
+            while (selectElement.options.length > 2) {
+                selectElement.remove(selectElement.options.length - 1);
+            }
+            
+            selectElement.querySelectorAll('optgroup').forEach(group => group.remove());
+
+            let mainGroup = document.createElement('optgroup');
+            mainGroup.label = "Collections Principales";
+            prebuiltCollections.forEach((gridId, collectionName) => {
+                const titleText = document.querySelector(`[data-collection-name="${collectionName}"]`).textContent;
+                const option = document.createElement('option');
+                option.value = collectionName;
+                option.textContent = titleText;
+                mainGroup.appendChild(option);
+            });
+            if (mainGroup.children.length > 0) {
+                selectElement.appendChild(mainGroup);
+            }
+
+            let customGroup = document.createElement('optgroup');
+            customGroup.label = "Vos Collections";
+            Array.from(userCollections).sort().forEach(collectionName => {
+                const option = document.createElement('option');
+                option.value = collectionName;
+                option.textContent = collectionName.charAt(0).toUpperCase() + collectionName.slice(1);
+                customGroup.appendChild(option);
+            });
+            
+            if (customGroup.children.length > 0) {
+                selectElement.appendChild(customGroup);
+            }
+            
+            selectElement.value = currentValue;
+        }
+        
+        // --- Logique du bouton de téléchargement (MISE À JOUR) ---
+        document.getElementById('download-site-btn').addEventListener('click', () => {
+            // 1. Récupérer toutes les données du localStorage
+            const userArtworks = localStorage.getItem('mycroftUserArt') || '[]';
+            const userCollections = localStorage.getItem('mycroftCustomCollections') || '{}';
+            
+            // 2. Préparer les données à "cuire" (bake-in)
+            const preloadedData = {
+                artworks: JSON.parse(userArtworks),
+                collections: JSON.parse(userCollections)
+            };
+            
+            // 3. Créer la balise script pour injecter les données
+            const dataScript = document.createElement('script');
+            dataScript.id = '__PRELOADED_DATA__';
+            dataScript.type = 'application/json';
+            dataScript.textContent = JSON.stringify(preloadedData);
+            
+            // 4. Cloner la page
+            const pageHtml = document.documentElement.cloneNode(true);
+            
+            // 5. Injecter le script dans le <head> du clone
+            pageHtml.querySelector('head').appendChild(dataScript);
+            
+            // 6. Nettoyer le clone (cacher le formulaire, etc.)
+            const formInClone = pageHtml.querySelector('#user-form-wrapper');
+            if (formInClone) formInClone.style.display = 'none';
+            const uploaderInClone = pageHtml.querySelector('#image-uploader');
+            if (uploaderInClone) uploaderInClone.value = null;
+
+            // 7. Créer le Blob et télécharger
+            const fullHtml = pageHtml.outerHTML;
+            const blob = new Blob([fullHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ma_galerie_mycroft_wind.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+
+        // --- Logique de la Modale (Écouteur d'événement délégué) ---
+        const modal = document.getElementById('modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const modalImgLink = document.getElementById('modal-img-link');
+        const modalImg = document.getElementById('modal-img');
+        const modalTitle = document.getElementById('modal-title');
+        const modalAuthor = document.getElementById('modal-author');
+        const modalDescription = document.getElementById('modal-description');
+        const modalEditSection = document.getElementById('modal-edit-section');
+        const modalCollectionSelect = document.getElementById('modal-collection-select');
+        const editDescBtn = document.getElementById('edit-desc-btn');
+        
+        document.getElementById('collection').addEventListener('click', (event) => {
+            const item = event.target.closest('.collection-item');
+            
+            if (event.target.closest('.delete-btn') || event.target.closest('.edit-tag-btn') || event.target.closest('.edit-collection-desc-btn')) {
+                // Géré par les écouteurs de suppression ou d'édition
+                return; 
+            }
+            
+            if (item) {
+                const imgUrl = item.dataset.img;
+                
+                modalImgLink.href = imgUrl;
+                modalImg.src = imgUrl;
+                modalTitle.textContent = item.dataset.title;
+                modalAuthor.textContent = item.dataset.author;
+                modalDescription.textContent = item.dataset.description;
+                
+                // Gérer la section d'édition
+                if (item.dataset.isUserArt === "true") {
+                    currentEditingArtworkId = item.dataset.id;
+                    updateCollectionDropdown(modalCollectionSelect);
+                    modalCollectionSelect.value = item.dataset.collection || "";
+                    modalEditSection.style.display = 'block';
+                    editDescBtn.classList.add('visible'); // Afficher le bouton d'édition
+                } else {
+                    currentEditingArtworkId = null;
+                    modalEditSection.style.display = 'none';
+                    editDescBtn.classList.remove('visible'); // Cacher le bouton d'édition
+                }
+                
+                modal.classList.add('active');
+                document.body.classList.add('overflow-hidden');
+            }
+        });
+        
+        // --- Logique de modification de collection (dans la modale) ---
+        modalCollectionSelect.addEventListener('change', () => {
+            if (!currentEditingArtworkId) return;
+
+            let newCollectionName = modalCollectionSelect.value;
+            let collectionJustCreated = false;
+            
+            if (newCollectionName === '__NEW__') {
+                const name = prompt("Entrez le nom de la nouvelle collection :");
+                if (name && name.trim() !== "") {
+                    newCollectionName = name.trim().toLowerCase();
+                    collectionJustCreated = true;
+                } else {
+                    const originalCollection = (JSON.parse(localStorage.getItem('mycroftUserArt')) || []).find(art => art.id === currentEditingArtworkId)?.collection || "";
+                    modalCollectionSelect.value = originalCollection;
+                    return;
+                }
+            }
+
+            let userArtworks = JSON.parse(localStorage.getItem('mycroftUserArt')) || [];
+            let artworkFound = false;
+            
+            userArtworks = userArtworks.map(art => {
+                if (art.id === currentEditingArtworkId) {
+                    art.collection = newCollectionName;
+                    artworkFound = true;
+                }
+                return art;
+            });
+
+            if (artworkFound) {
+                // NOUVEAU: Mettre à jour les descriptions de collection si nécessaire
+                if(collectionJustCreated && !customCollectionDescriptions[newCollectionName]) {
+                    customCollectionDescriptions[newCollectionName] = "Votre collection personnalisée.";
+                    localStorage.setItem('mycroftCustomCollections', JSON.stringify(customCollectionDescriptions));
+                }
+                
+                localStorage.setItem('mycroftUserArt', JSON.stringify(userArtworks));
+                renderUserArtworks(userArtworks);
+                if(collectionJustCreated) {
+                    updateCollectionDropdown(modalCollectionSelect);
+                    modalCollectionSelect.value = newCollectionName;
+                }
+            }
+        });
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.classList.remove('overflow-hidden');
+            currentEditingArtworkId = null;
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // --- Logique de suppression (déléguée à la section collection) ---
+        document.getElementById('collection').addEventListener('click', (event) => {
+            const deleteButton = event.target.closest('.delete-btn');
+            if (!deleteButton) return;
+
+            event.stopPropagation();
+
+            const card = deleteButton.closest('.collection-item');
+            const artworkId = card.dataset.id;
+
+            if (!artworkId) return;
+            
+            // Utiliser une boîte de dialogue personnalisée au lieu de confirm()
+            if (confirm("Voulez-vous vraiment supprimer cette œuvre ?")) {
+                let userArtworks = JSON.parse(localStorage.getItem('mycroftUserArt')) || [];
+                const newArtworks = userArtworks.filter(art => art.id !== artworkId);
+                
+                localStorage.setItem('mycroftUserArt', JSON.stringify(newArtworks));
+                
+                renderUserArtworks(newArtworks);
+            }
+        });
+
+        // --- NOUVEAU: Logique d'édition (déléguée) ---
+
+        // 1. Édition du Tag
+        document.getElementById('collection').addEventListener('click', (event) => {
+            const editTagBtn = event.target.closest('.edit-tag-btn');
+            if (!editTagBtn) return;
+
+            event.stopPropagation(); // Empêcher l'ouverture de la modale
+
+            const card = editTagBtn.closest('.collection-item');
+            const artworkId = card.dataset.id;
+            if (!artworkId) return;
+
+            const currentTag = card.dataset.tag || "Ajouté par vous";
+            const newTag = prompt("Entrez le nouveau tag :", currentTag);
+
+            if (newTag !== null && newTag.trim() !== "") {
+                let userArtworks = JSON.parse(localStorage.getItem('mycroftUserArt')) || [];
+                let artworkFound = false;
+                
+                userArtworks = userArtworks.map(art => {
+                    if (art.id === artworkId) {
+                        art.tag = newTag.trim();
+                        artworkFound = true;
+                    }
+                    return art;
+                });
+
+                if (artworkFound) {
+                    localStorage.setItem('mycroftUserArt', JSON.stringify(userArtworks));
+                    renderUserArtworks(userArtworks);
+                }
+            }
+        });
+
+        // 2. Édition de la Description (dans la modale)
+        document.getElementById('edit-desc-btn').addEventListener('click', () => {
+            if (!currentEditingArtworkId) return;
+
+            const currentDescription = document.getElementById('modal-description').textContent;
+            const newDescription = prompt("Entrez la nouvelle description :", currentDescription);
+
+            if (newDescription !== null) {
+                let userArtworks = JSON.parse(localStorage.getItem('mycroftUserArt')) || [];
+                let artworkFound = false;
+                
+                userArtworks = userArtworks.map(art => {
+                    if (art.id === currentEditingArtworkId) {
+                        art.description = newDescription;
+                        artworkFound = true;
+                    }
+                    return art;
+                });
+
+                if (artworkFound) {
+                    localStorage.setItem('mycroftUserArt', JSON.stringify(userArtworks));
+                    renderUserArtworks(userArtworks);
+                    document.getElementById('modal-description').textContent = newDescription;
+                }
+            }
+        });
+        
+        // 3. NOUVEAU: Édition de la description de la collection
+        document.getElementById('collection').addEventListener('click', (event) => {
+            const editCollectionDescBtn = event.target.closest('.edit-collection-desc-btn');
+            if (!editCollectionDescBtn) return;
+
+            event.stopPropagation(); 
+
+            const collectionName = editCollectionDescBtn.dataset.collectionName;
+            if (!collectionName) return;
+
+            const currentDescription = customCollectionDescriptions[collectionName] || "Votre collection personnalisée.";
+            const newDescription = prompt(`Entrez la nouvelle description pour "${collectionName}" :`, currentDescription);
+
+            if (newDescription !== null) {
+                customCollectionDescriptions[collectionName] = newDescription;
+                localStorage.setItem('mycroftCustomCollections', JSON.stringify(customCollectionDescriptions));
+                
+                // Re-dessiner pour mettre à jour la description
+                let userArtworks = JSON.parse(localStorage.getItem('mycroftUserArt')) || [];
+                renderUserArtworks(userArtworks);
+            }
+        });
+        
+        // --- CORRECTIF DE DÉMARRAGE ---
+        // S'assurer que loadUserArt s'exécute même si le DOM est déjà chargé
+        // (crucial pour le fichier téléchargé)
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', loadUserArt);
+        } else {
+            // Le DOM est déjà chargé, exécuter immédiatement
+            loadUserArt();
+        }
+
+    </script>
+</body>
+</html>
