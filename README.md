@@ -1,5 +1,9 @@
 # Art-Gallery
 
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="Capture d'écran 2025-11-14 162432" />
+</div>
+
 **Français** :
 
 Il s'agit de la création d'un site web complet pour une galerie d'art fictive appelée **"White Wind"**. Le thème de la galerie est "Paysages Immortels", avec une esthétique très épurée, moderne et fluide.
