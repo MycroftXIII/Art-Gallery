@@ -1,7 +1,7 @@
 # Art-Gallery
 
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="Capture d'écran 2025-11-14 162432" />
+<img width="1200" height="475" alt="GHBanner" src="1.png" />
 </div>
 
 **Français** :
