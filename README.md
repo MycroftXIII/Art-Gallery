@@ -31,6 +31,10 @@ Voici les fonctionnalités clés que nous avons développées :
     * Toutes vos modifications sont sauvegardées dans le **stockage local (`localStorage`)** de votre navigateur. Si vous rechargez la page, rien n'est perdu.
     * Pour utiliser votre galerie sur un autre appareil, un bouton **"Télécharger le site"** a été créé. Il sauvegarde une nouvelle version du fichier HTML qui contient *toutes vos données* (vos œuvres, vos collections, vos descriptions) "cuites" à l'intérieur.
 
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="Capture d'écran 2025-11-14 162512.png" />
+</div>
+
 En ouvrant ce fichier téléchargé sur n'importe quel appareil (un autre ordinateur, un téléphone), vous retrouverez votre galerie exactement comme vous l'aviez laissée.
 
 
